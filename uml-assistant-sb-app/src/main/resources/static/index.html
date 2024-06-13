@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>UML assistant</title>
+  <style>
+    :root {
+      --primary-color: #00162c;
+      font-family: "Courier New", monospace;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+    }
+    .history-request {
+      padding: 10px;
+      margin: 10px;
+      border: 1px solid #9b9b9b;
+      border-radius: 5px;
+      background: #9ddeec;
+      align-self: flex-start;
+    }
+
+    .history-response {
+      padding: 10px;
+      margin: 10px;
+      border: 1px solid #9b9b9b;
+      border-radius: 5px;
+      background: #c6c6c6;
+      align-self: flex-end;
+    }
+
+    .w-full {
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+<div>
+  <img id="plantuml-image"/>
+</div>
+
+<div>
+  <textarea id="text-input" cols="80" rows="5" class="w-full"></textarea>
+</div>
+
+<div id="conversation-history" class="container">
+
+</body>
+<script type="application/ecmascript">
+  const imageElement = document.getElementById('plantuml-image');
+  const sendButton = document.getElementById('send-button');
+  const textInput = document.getElementById('text-input');
+  const conversationHistory = document.getElementById('conversation-history');
+  textInput.onkeyup = async (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      chat();
+    }
+  };
+
+  async function chat() {
+    const text = textInput.value;
+    textInput.value = "";
+    conversationHistory.innerHTML = `<div class="history-request">${text}</div>` + conversationHistory.innerHTML;
+    const response = await fetch("/api/v1/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plan"
+      },
+      body: text
+    })
+    const plantUmlresponse = await response.json();
+    // imageElement.src = `https://www.plantuml.com/plantuml/svg/${encodedText}`;
+    conversationHistory.innerHTML = `<div class="history-response">${plantUmlresponse.answer}</div>` + conversationHistory.innerHTML
+
+    imageElement.src = plantUmlresponse.plantUmlDiagramUri;
+  }
+</script>
+</html>
