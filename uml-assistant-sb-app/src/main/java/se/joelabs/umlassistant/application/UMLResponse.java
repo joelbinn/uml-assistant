@@ -7,11 +7,15 @@ import lombok.val;
 import java.net.URI;
 
 @Slf4j
-public record UMLResponse(String answer, URI plantUmlDiagramUri) {
-  public static UMLResponse createFor(String chatAnswer, String diagram) {
-    log.debug("Creating UMLResponse for response: {}; diagram: {}", chatAnswer, diagram);
-    val encoder = new PlantUmlEncoder();
-    val encodedDiagram = encoder.encode(diagram);
-    return new UMLResponse(chatAnswer, URI.create("https://www.plantuml.com/plantuml/svg/%s".formatted(encodedDiagram)));
+public record UMLResponse(String answer, String id, URI plantUmlDiagramUri) {
+  public static UMLResponse createFor(String chatAnswer, String id, String diagramSpec) {
+    log.debug("Creating UMLResponse for response: {}, {}, {}", chatAnswer, id, diagramSpec);
+    URI diagramUri = null;
+    if (diagramSpec != null) {
+      val encoder = new PlantUmlEncoder();
+      val encodedDiagram = encoder.encode(diagramSpec);
+      diagramUri = java.net.URI.create("https://www.plantuml.com/plantuml/svg/%s".formatted(encodedDiagram));
+    }
+    return new UMLResponse(chatAnswer, id, diagramUri);
   }
 }

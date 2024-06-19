@@ -19,6 +19,7 @@ public class UMLAssistantChat {
     OpenAiChatModel model = OpenAiChatModel.builder()
       .apiKey(apiKey)
       .modelName("gpt-4o")
+      .responseFormat("json_object")
       .logRequests(true)
       .logResponses(true)
       .build();

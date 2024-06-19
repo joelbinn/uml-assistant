@@ -8,13 +8,16 @@
       --primary-color: #00162c;
       font-family: "Courier New", monospace;
     }
+
     .container {
       display: flex;
       flex-direction: column;
     }
+
     .history-request {
       padding: 10px;
       margin: 10px;
+      width: 75%;
       border: 1px solid #9b9b9b;
       border-radius: 5px;
       background: #9ddeec;
@@ -24,6 +27,7 @@
     .history-response {
       padding: 10px;
       margin: 10px;
+      width: 75%;
       border: 1px solid #9b9b9b;
       border-radius: 5px;
       background: #c6c6c6;
@@ -36,6 +40,7 @@
   </style>
 </head>
 <body>
+<h1 id="id-element"></h1>
 <div>
   <img id="plantuml-image"/>
 </div>
@@ -44,14 +49,14 @@
   <textarea id="text-input" cols="80" rows="5" class="w-full"></textarea>
 </div>
 
-<div id="conversation-history" class="container">
+<div id="conversation-history" class="container"></div>
 
 </body>
 <script type="application/ecmascript">
   const imageElement = document.getElementById('plantuml-image');
-  const sendButton = document.getElementById('send-button');
   const textInput = document.getElementById('text-input');
   const conversationHistory = document.getElementById('conversation-history');
+  const idElement = document.getElementById('id-element');
   textInput.onkeyup = async (event) => {
     if (event.key === "Enter" && !event.shiftKey) {
       chat();
@@ -61,7 +66,7 @@
   async function chat() {
     const text = textInput.value;
     textInput.value = "";
-    conversationHistory.innerHTML = `<div class="history-request">${text}</div>` + conversationHistory.innerHTML;
+    conversationHistory.innerHTML = `<div class="history-request">${text.replace("\n","<br>")}</div>` + conversationHistory.innerHTML;
     const response = await fetch("/api/v1/chat", {
       method: "POST",
       headers: {
@@ -69,11 +74,11 @@
       },
       body: text
     })
-    const plantUmlresponse = await response.json();
+    const plantUmlResponse = await response.json();
     // imageElement.src = `https://www.plantuml.com/plantuml/svg/${encodedText}`;
-    conversationHistory.innerHTML = `<div class="history-response">${plantUmlresponse.answer}</div>` + conversationHistory.innerHTML
-
-    imageElement.src = plantUmlresponse.plantUmlDiagramUri;
+    conversationHistory.innerHTML = `<div class="history-response">${plantUmlResponse.answer.replace("\n","<br>")}</div>` + conversationHistory.innerHTML
+    idElement.textContent = plantUmlResponse.id;
+    imageElement.src = plantUmlResponse.plantUmlDiagramUri;
   }
 </script>
 </html>

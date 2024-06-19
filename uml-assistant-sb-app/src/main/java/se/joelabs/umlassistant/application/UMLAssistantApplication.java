@@ -25,7 +25,8 @@ public class UMLAssistantApplication {
         System.out.println("Tack för samtalet\nHej då :-)!");
         break;
       }
-      Result<String> answer = UMLAssistant.chat(command);
+      Result<UMLAssistantChatResponse> answer = UMLAssistant.chat(command);
+      UMLAssistantChatResponse resp = answer.content();
       System.out.println("Svar: %s".formatted(answer.content()));
     }
     scanner.close();
